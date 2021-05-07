@@ -1,4 +1,5 @@
 from flask import Flask
+import request
 
 app = Flask(__name__)
 
@@ -17,6 +18,14 @@ def test():
 @app.route('/test2')
 def test2():
     return 'Test2'
+
+
+@app.route('/center')
+def getCenters():
+    data= request.get_json(force=True)
+    url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode="+data.pincodes+"&date="+data.dateArr
+    return data.pincodes
+
 
 if __name__ == '__main__':
     app.run()
