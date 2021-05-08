@@ -32,7 +32,7 @@ def getdata(pincode,date):
     print(type(reposne_data))    
 
     if not 'centers' in reposne_data or len(reposne_data['centers']) == 0:
-        return "Do data avilable for this date and pincode"
+        return "No data of Centers for this date and pincode"
     else:
         return reposne_data
 
