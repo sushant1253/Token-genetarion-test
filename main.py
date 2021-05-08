@@ -2,10 +2,14 @@ from flask import Flask, request
 import logging
 import requests
 
+import asyncio 
+import aiohttp
+
 app = Flask(__name__)
 
-def getdata(pincode,date):
-    headersc = {
+async def getdata(pincode,date):
+    async with aiohttp.ClientSession() as session:
+        headersc = {
     'authority': 'cdn-api.co-vin.in',
     'accept': 'application/json, text/plain, */*',
     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.8.107.794 Safari/537.36',
@@ -17,16 +21,19 @@ def getdata(pincode,date):
     'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
     'if-none-match': 'W/"7b1e-u5AO2iIdcDpbt4Qo1JbYPHtUqx8"',
 }
-    # url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode="+pincode+"&date="+date
-    url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}'
-    reposne_data = None
-    try:
-        reposne_data = requests.request(
-            "GET", url,  headers=headersc
-        ).json()
-    except Exception as e:
-        logging.debug(f"Error is {e}")
-        print("API calling error")
+        url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}'
+        reposne_data = None
+
+        try:
+            async with session.post(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}',
+                headers= headersc) as resp: 
+                reposne_data = await resp.json() 
+               
+        except Exception as e:
+            logging.debug(f"Error is {e}")
+            print("API calling error")
+
+
 
     print(type(reposne_data))    
     if reposne_data != None:
