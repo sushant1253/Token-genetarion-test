@@ -1,6 +1,5 @@
 from flask import Flask, request
-
-
+import logging
 import requests
 
 app = Flask(__name__)
@@ -20,21 +19,23 @@ def getdata(pincode,date):
 }
     # url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode="+pincode+"&date="+date
     url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}'
-    print(url)
-
+    reposne_data = None
     try:
         reposne_data = requests.request(
             "GET", url,  headers=headersc, timeout=8
         ).json()
     except Exception as e:
-        print(e)
+        logging.debug(f"Error is {e}")
+        print("API calling error")
 
     print(type(reposne_data))    
-
-    if not 'centers' in reposne_data or len(reposne_data['centers']) == 0:
-        return "No data of Centers for this date and pincode"
+    if reposne_data != None:
+        if not 'centers' in reposne_data or len(reposne_data['centers']) == 0:
+            return "No data of Centers for this date and pincode"
+        else:
+            return reposne_data
     else:
-        return reposne_data
+        return "CoWin API calling error"
 
 
 @app.route('/hello')
@@ -56,9 +57,13 @@ def test2():
 @app.route('/center')
 def getCenters():
     data= request.get_json(force=True)
-    pincode = str(data['pincodes'])
-    date = data['dateArr']
-    data = getdata(pincode,date)
+    if not 'pincodes' in data or not 'dateArr' in data or len(data['pincodes']) == 0 or len(data['dateArr']) == 0:
+        logging.debug("Input is missing")
+        data = "Missing inputs"
+    else:
+        pincode = str(data['pincodes'])
+        date = data['dateArr']
+        data = getdata(pincode,date)
 
     return data
 
