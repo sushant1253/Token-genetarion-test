@@ -26,8 +26,9 @@ async def getdata(pincode,date):
 
         try:
             async with session.post(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}',
-                headers= headersc) as resp: 
+                headers= headersc, ) as resp: 
                 reposne_data = await resp.json() 
+                print(reposne_data)
                
         except Exception as e:
             logging.debug(f"Error is {e}")
@@ -70,7 +71,7 @@ def getCenters():
     else:
         pincode = str(data['pincodes'])
         date = data['dateArr']
-        data = getdata(pincode,date)
+        data = asyncio.run(getdata(pincode,date))
 
     return data
 
