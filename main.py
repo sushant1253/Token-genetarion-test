@@ -22,7 +22,7 @@ def getdata(pincode,date):
     reposne_data = None
     try:
         reposne_data = requests.request(
-            "GET", url,  headers=headersc, timeout=150
+            "GET", url,  headers=headersc
         ).json()
     except Exception as e:
         logging.debug(f"Error is {e}")
