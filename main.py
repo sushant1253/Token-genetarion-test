@@ -23,10 +23,18 @@ def getdata(pincode,date):
     try:
         reposne_data = requests.request(
             "GET", url,  headers=headersc, timeout=700
-        ).json()
+        )
+        reposne_data = reposne_data.json()
     except requests.RequestException as e:
         logging.debug(f"Error is {e}")
-        print("API calling error")
+        print("API calling error ")
+
+    except requests.Timeout as e:
+        logging.debug(f"Error is {e}")
+        print("API calling error 1")
+
+    except Exception as e:
+        print("API calling error 2")
 
     print(type(reposne_data))    
     if reposne_data != None:
