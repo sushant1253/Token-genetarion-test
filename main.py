@@ -2,17 +2,10 @@ from flask import Flask, request
 import logging
 import requests
 
-import asyncio 
-import aiohttp
-
-import base64
-import json
-
 app = Flask(__name__)
 
-async def getdata(pincode,date):
-    async with aiohttp.ClientSession() as session:
-        headersc = {
+def getdata(pincode,date):
+    headersc = {
     'authority': 'cdn-api.co-vin.in',
     'accept': 'application/json, text/plain, */*',
     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.8.107.794 Safari/537.36',
@@ -24,31 +17,20 @@ async def getdata(pincode,date):
     'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
     'if-none-match': 'W/"7b1e-u5AO2iIdcDpbt4Qo1JbYPHtUqx8"',
 }
-        url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}'
-        reposne_data = None
-
-        try:
-            async with session.get(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode={pincode}&date={date}',
-                headers= headersc, ) as resp: 
-                reposne_data = await resp.json() 
-                print(reposne_data)
-               
-        except requests.RequestException as e:
-            logging.debug(f"Error is {e}")
-            print("API calling error")
-
-
+    # url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode="+pincode+"&date="+date
+    url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}'
+    reposne_data = None
+    try:
+        reposne_data = requests.request(
+            "GET", url,  headers=headersc, timeout=700
+        ).json()
+    except requests.RequestException as e:
+        logging.debug(f"Error is {e}")
+        print("API calling error")
 
     print(type(reposne_data))    
-
-    # reposne_data = reposne_data.decode('utf-8')
-    # reposne_data = json.loads(reposne_data)
-    # reposne_data = json.dumps(reposne_data, indent=4, sort_keys=True)
-
-    # print(type(reposne_data))   
-    print(reposne_data["centers"])
     if reposne_data != None:
-        if not 'centers' in reposne_data or len(reposne_data["centers"]) == 0:
+        if not 'centers' in reposne_data or len(reposne_data['centers']) == 0:
             return "No data of Centers for this date and pincode"
         else:
             return reposne_data
@@ -81,7 +63,7 @@ def getCenters():
     else:
         pincode = str(data['pincodes'])
         date = data['dateArr']
-        data = asyncio.run(getdata(pincode,date))
+        data = getdata(pincode,date)
 
     return data
 
