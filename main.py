@@ -34,7 +34,24 @@ def getdata(pincode,date):
         print("API calling error 1")
 
     except Exception as e:
+        logging.debug(f"Error is {e}")
         print("API calling error 2")
+
+    except requests.ConnectionError as e:
+        logging.debug(f"Error is {e}")
+        print("API calling error 3")
+    
+    except requests.ReadTimeout as e:
+        logging.debug(f"Error is {e}")
+        print("API calling error 4")
+
+    except requests.HTTPError as e:
+        logging.debug(f"Error is {e}")
+        print("API calling error 5")
+    
+    except requests.RequestException as e:
+        logging.debug(f"Error is {e}")
+        print("API calling error 6")
 
     print(type(reposne_data))    
     if reposne_data != None:
