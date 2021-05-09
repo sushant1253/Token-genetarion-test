@@ -28,7 +28,7 @@ async def getdata(pincode,date):
         reposne_data = None
 
         try:
-            async with session.get(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}',
+            async with session.get(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode={pincode}&date={date}',
                 headers= headersc, ) as resp: 
                 reposne_data = await resp.json() 
                 print(reposne_data)
