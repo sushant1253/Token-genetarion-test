@@ -5,6 +5,9 @@ import requests
 import asyncio 
 import aiohttp
 
+import base64
+import json
+
 app = Flask(__name__)
 
 async def getdata(pincode,date):
@@ -25,20 +28,27 @@ async def getdata(pincode,date):
         reposne_data = None
 
         try:
-            async with session.post(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}',
+            async with session.get(url = f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={pincode}&date={date}',
                 headers= headersc, ) as resp: 
                 reposne_data = await resp.json() 
                 print(reposne_data)
                
-        except Exception as e:
+        except requests.RequestException as e:
             logging.debug(f"Error is {e}")
             print("API calling error")
 
 
 
     print(type(reposne_data))    
+
+    # reposne_data = reposne_data.decode('utf-8')
+    # reposne_data = json.loads(reposne_data)
+    # reposne_data = json.dumps(reposne_data, indent=4, sort_keys=True)
+
+    # print(type(reposne_data))   
+    print(reposne_data["centers"])
     if reposne_data != None:
-        if not 'centers' in reposne_data or len(reposne_data['centers']) == 0:
+        if not 'centers' in reposne_data or len(reposne_data["centers"]) == 0:
             return "No data of Centers for this date and pincode"
         else:
             return reposne_data
