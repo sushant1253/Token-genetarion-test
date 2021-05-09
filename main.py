@@ -54,6 +54,10 @@ def getdata(pincode,date):
         logging.info(f"Error is {e}")
         print("API calling error 6")
 
+    except requests.NullHandler as e:
+        logging.info(f"Error is {e}")
+        print("API calling error 7")
+
     print(type(reposne_data))    
     if reposne_data != None:
         if not 'centers' in reposne_data or len(reposne_data['centers']) == 0:
